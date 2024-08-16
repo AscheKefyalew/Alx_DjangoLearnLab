@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.views.generic import DetailView
+from django.views.generic.detail import DetailView  # Correct import for DetailView
 from .models import Library, Book  # Ensure you're importing the models
 
 def list_books(request):
