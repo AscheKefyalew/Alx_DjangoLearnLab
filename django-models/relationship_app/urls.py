@@ -16,8 +16,8 @@ urlpatterns = [
 
     # Book-related views
     path('books/', views.list_books, name='list_books'),  # List books
-    path('books/add/', views.add_book, name='add_book'),  # Add a book
-    path('books/<int:pk>/edit/', views.edit_book, name='edit_book'),  # Edit a book
+    path('books/add/', views.add_book, name='add_book/'),  # Add a book
+    path('books/<int:pk>/edit/', views.edit_book, name='edit_book/'),  # Edit a book
     path('books/<int:pk>/delete/', views.delete_book, name='delete_book'),  # Delete a book
 
     # Library detail view
