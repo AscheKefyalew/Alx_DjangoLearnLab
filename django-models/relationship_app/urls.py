@@ -38,6 +38,15 @@ urlpatterns = [
 #     path('edit-book/<int:pk>/', views.edit_book, name='edit_book'),  # URL for editing a book
 #     path('delete-book/<int:pk>/', views.delete_book, name='delete_book'),  # URL for deleting a book
 # ]
+from django.contrib import admin
+from django.urls import path, include
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('books/', include('relationship_app.urls')),  # Include the app URLs
+]
+
+
 
 from django.urls import path
 from .views import add_book, edit_book, delete_book, BookListView
