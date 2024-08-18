@@ -63,15 +63,17 @@ def librarian_view(request):
 # include permission checks using the permission_required decorator from django.contrib.auth.decorators
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import permission_required
+from .models import Book
 from .forms import BookForm  # Assuming you have a form class for Book
 
+# Add your view functions here
 @permission_required('relationship_app.can_add_book', raise_exception=True)
 def add_book(request):
     if request.method == 'POST':
         form = BookForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('book_list')  # Redirect to the book list or another view after saving
+            return redirect('book_list')
     else:
         form = BookForm()
     return render(request, 'relationship_app/add_book.html', {'form': form})
@@ -83,7 +85,7 @@ def edit_book(request, pk):
         form = BookForm(request.POST, instance=book)
         if form.is_valid():
             form.save()
-            return redirect('book_list')  # Redirect to the book list or another view after saving
+            return redirect('book_list')
     else:
         form = BookForm(instance=book)
     return render(request, 'relationship_app/edit_book.html', {'form': form})
@@ -93,5 +95,5 @@ def delete_book(request, pk):
     book = get_object_or_404(Book, pk=pk)
     if request.method == 'POST':
         book.delete()
-        return redirect('book_list')  # Redirect to the book list or another view after deletion
+        return redirect('book_list')
     return render(request, 'relationship_app/delete_book.html', {'book': book})
