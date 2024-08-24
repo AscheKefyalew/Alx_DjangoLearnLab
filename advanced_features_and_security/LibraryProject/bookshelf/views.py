@@ -33,4 +33,15 @@ def books(request):
     books = Book.objects.all()
     return render(request, 'bookshelf/books.html', {'books': books})
 
+#Example view in views.py
+def example_view(request):
+    form = ExampleForm()
+    if request.method == 'POST':
+        form = ExampleForm(request.POST)
+        if form.is_valid():
+            # Handle form processing
+            pass
+    return render(request, 'bookshelf/form_example.html', {'form': form})
+
+
 
