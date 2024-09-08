@@ -10,6 +10,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from .filters import BookFilter
 from django_filters import rest_framework as filters
 from rest_framework.filters import OrderingFilter, SearchFilter
+from rest_framework.filters import OrderingFilter
 
 
 # ListView: Retrieve all books
