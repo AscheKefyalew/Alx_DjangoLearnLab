@@ -2,10 +2,18 @@ from rest_framework.test import APITestCase
 from rest_framework import status
 from .models import Book
 from .serializers import BookSerializer
+from django.contrib.auth.models import User
 
 class BookAPITestCase(APITestCase):
 
     def setUp(self):
+        # Create a user for authentication
+        self.user = User.objects.create_user(username='testuser', password='testpassword')
+        
+        # Log in the user
+        self.client.login(username='testuser', password='testpassword')
+
+        # Define valid and invalid payloads
         self.valid_payload = {
             'title': 'New Book',
             'publication_year': 2024,
@@ -16,6 +24,8 @@ class BookAPITestCase(APITestCase):
             'publication_year': 2024,
             'author': 1
         }
+        
+        # Create a sample book
         self.book = Book.objects.create(**self.valid_payload)
 
     def test_create_book(self):
