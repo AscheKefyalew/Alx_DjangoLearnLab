@@ -24,3 +24,11 @@ class AuthorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Author
         fields = ['name', 'books']
+
+class BookCreateView(generics.CreateAPIView):
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+
+    def perform_create(self, serializer):
+        # Additional logic during creation, e.g., setting the author automatically
+        serializer.save(author=self.request.user)
