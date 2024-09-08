@@ -12,7 +12,6 @@ from django_filters import rest_framework as filters
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.filters import OrderingFilter
 
-
 # ListView: Retrieve all books
 # BookListView: Returns a list of all books
 # No authentication required, available to any user
