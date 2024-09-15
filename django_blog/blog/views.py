@@ -1,7 +1,7 @@
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
-from .models import Post, Comment
+from .models import Post, Comment, Tag
 from .forms import PostForm, CommentForm
 from django.contrib.auth import login as auth_login
 from django.contrib.auth.forms import UserCreationForm
@@ -10,6 +10,7 @@ from django.contrib.auth.forms import UserChangeForm
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
+from django.db.models import Q
 
 def home(request):
     return render(request, 'blog/home.html')
@@ -32,6 +33,11 @@ def post_detail(request, pk):
     else:
         form = CommentForm()
     return render(request, 'blog/post_detail.html', {'post': post, 'comments': comments, 'form': form})
+
+def posts_by_tag(request, tag_name):
+    tag = get_object_or_404(Tag, name=tag_name)
+    posts = Post.objects.filter(tags=tag)
+    return render(request, 'blog/posts_by_tag.html', {'posts': posts, 'tag': tag_name})
 
 
 @login_required
@@ -87,6 +93,17 @@ def post_delete(request, pk):
         post.delete()
         return redirect('posts')
     return render(request, 'blog/post_confirm_delete.html', {'post': post})
+
+def search_posts(request):
+    query = request.GET.get('q')
+    if query:
+        posts = Post.objects.filter(
+            Q(title__icontains=query) | Q(content__icontains=query) | Q(tags__name__icontains=query)
+        ).distinct()
+    else:
+        posts = Post.objects.none()
+
+    return render(request, 'blog/search_results.html', {'posts': posts, 'query': query})
 
 def register(request):
     if request.method == "POST":

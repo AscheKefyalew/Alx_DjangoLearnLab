@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
 from django.contrib.auth import views as auth_views
+from .views import search_posts
 
 urlpatterns = [
     path('', views.home, name='home'),  # Home page URL
@@ -14,6 +15,10 @@ urlpatterns = [
     path('post/<int:pk>/comments/new/', views.CommentCreateView.as_view(), name='comment_create'),
     path('comment/<int:pk>/update/', views.CommentUpdateView.as_view(), name='comment_edit'),
     path('comment/<int:pk>/delete/', views.CommentDeleteView.as_view(), name='comment_delete'),
+
+    # Search post and tag
+    path('search/', search_posts, name='search_posts'),
+    path('tags/<str:tag_name>/', views.posts_by_tag, name='posts_by_tag'),
 
 
     # Authentication URLs

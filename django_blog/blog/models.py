@@ -8,6 +8,7 @@ class Post(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     created_date = models.DateTimeField(default=timezone.now)
     published_date = models.DateTimeField(blank=True, null=True)
+    tags = models.ManyToManyField('Tag', blank=True)  # Many-to-many relationship with Tag
 
     def publish(self):
         self.published_date = timezone.now()
@@ -15,6 +16,12 @@ class Post(models.Model):
 
     def __str__(self):
         return self.title
+
+class Tag(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+
+    def __str__(self):
+        return self.name
 
 class Comment(models.Model):
     post = models.ForeignKey(Post, related_name='comments', on_delete=models.CASCADE)
