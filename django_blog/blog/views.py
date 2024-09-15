@@ -8,6 +8,8 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserChangeForm
 from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
 
 def home(request):
     return render(request, 'blog/home.html')
@@ -31,6 +33,7 @@ def post_detail(request, pk):
         form = CommentForm()
     return render(request, 'blog/post_detail.html', {'post': post, 'comments': comments, 'form': form})
 
+
 @login_required
 def comment_edit(request, pk):
     comment = get_object_or_404(Comment, pk=pk)
@@ -51,10 +54,6 @@ def comment_delete(request, pk):
         comment.delete()
         return redirect('post_detail', pk=post_pk)
     return render(request, 'blog/comment_confirm_delete.html', {'comment': comment})
-
-
-
-
 
 @login_required
 def post_create(request):
@@ -112,6 +111,45 @@ def profile(request):
     return render(request, 'blog/profile.html', {'form': form})
 
 
+@method_decorator(login_required, name='dispatch')
+class CommentCreateView(CreateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = 'blog/comment_form.html'
+
+    def form_valid(self, form):
+        form.instance.post = get_object_or_404(Post, pk=self.kwargs['post_pk'])
+        form.instance.author = self.request.user
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('post_detail', kwargs={'pk': self.kwargs['post_pk']})
+
+@method_decorator(login_required, name='dispatch')
+class CommentUpdateView(UpdateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = 'blog/comment_form.html'
+
+    def get_success_url(self):
+        return reverse_lazy('post_detail', kwargs={'pk': self.object.post.pk})
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return queryset.filter(author=self.request.user)
+
+@method_decorator(login_required, name='dispatch')
+class CommentDeleteView(DeleteView):
+    model = Comment
+    template_name = 'blog/comment_confirm_delete.html'
+
+    def get_success_url(self):
+        return reverse_lazy('post_detail', kwargs={'pk': self.object.post.pk})
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return queryset.filter(author=self.request.user)
+
 # ListView for displaying all posts
 class PostListView(ListView):
     model = Post
@@ -122,6 +160,12 @@ class PostListView(ListView):
 class PostDetailView(DetailView):
     model = Post
     template_name = 'blog/post_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['comments'] = self.object.comments.all()
+        context['form'] = CommentForm()
+        return context
 
 # CreateView for creating a new post
 class PostCreateView(LoginRequiredMixin, CreateView):
