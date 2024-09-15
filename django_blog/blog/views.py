@@ -9,6 +9,9 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserChangeForm
 
+def home(request):
+    return render(request, 'blog/home.html')
+
 def register(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
