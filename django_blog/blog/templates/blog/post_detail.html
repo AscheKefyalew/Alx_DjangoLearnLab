@@ -1,16 +1,25 @@
-{% extends 'blog/base.html' %}
+<!-- blog/templates/blog/post_detail.html -->
 
-{% block title %}{{ post.title }}{% endblock %}
-
-{% block content %}
-<h2>{{ post.title }}</h2>
+<h1>{{ post.title }}</h1>
 <p>{{ post.content }}</p>
-<p>By {{ post.author }} on {{ post.created_at }}</p>
+<p>Posted by {{ post.author }} on {{ post.created_at }}</p>
 
-{% if user == post.author %}
-    <a href="{% url 'post_update' pk=post.pk %}">Edit</a>
-    <a href="{% url 'post_delete' pk=post.pk %}">Delete</a>
-{% endif %}
+<h2>Comments</h2>
+<ul>
+    {% for comment in comments %}
+    <li>
+        <strong>{{ comment.author }}</strong> ({{ comment.created_at }}): {{ comment.content }}
+        {% if comment.author == user %}
+        <a href="{% url 'comment_edit' comment.pk %}">Edit</a>
+        <a href="{% url 'comment_delete' comment.pk %}">Delete</a>
+        {% endif %}
+    </li>
+    {% endfor %}
+</ul>
 
-<a href="{% url 'post_list' %}">Back to List</a>
-{% endblock %}
+<h3>Add a Comment</h3>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Submit</button>
+</form>
