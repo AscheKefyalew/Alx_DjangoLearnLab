@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+from taggit.managers import TaggableManager
 
 class Post(models.Model):
     title = models.CharField(max_length=200)
@@ -8,7 +9,7 @@ class Post(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     created_date = models.DateTimeField(default=timezone.now)
     published_date = models.DateTimeField(blank=True, null=True)
-    tags = models.ManyToManyField('Tag', blank=True)  # Many-to-many relationship with Tag
+    tags = TaggableManager()  # Add TaggableManager to handle tags
 
     def publish(self):
         self.published_date = timezone.now()
