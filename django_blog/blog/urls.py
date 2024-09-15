@@ -2,6 +2,7 @@ from django.urls import path
 from . import views
 from django.contrib.auth import views as auth_views
 from .views import search_posts
+from .views import PostByTagListView  # Import tag-based view
 
 urlpatterns = [
     path('', views.home, name='home'),  # Home page URL
@@ -18,7 +19,7 @@ urlpatterns = [
 
     # Search post and tag
     path('search/', search_posts, name='search_posts'),
-    path('tags/<str:tag_name>/', views.posts_by_tag, name='posts_by_tag'),
+    path('tags/<slug:tag_slug>/', PostByTagListView.as_view(), name='post_by_tag'),
 
 
     # Authentication URLs
