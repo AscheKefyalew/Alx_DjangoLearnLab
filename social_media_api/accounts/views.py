@@ -49,3 +49,11 @@ class UnfollowUserView(generics.GenericAPIView):
             return Response({'detail': f'You have unfollowed {user_to_unfollow.username}'}, status=status.HTTP_200_OK)
         except User.DoesNotExist:
             return Response({'detail': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+class ListUsersView(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        users = User.objects.all()
+        user_data = [{"id": user.id, "username": user.username} for user in users]
+        return Response(user_data, status=status.HTTP_200_OK)
