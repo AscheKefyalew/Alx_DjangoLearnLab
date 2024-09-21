@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import Post, Like
 from notifications.models import Notification
+from django.shortcuts import get_object_or_404
 
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
@@ -40,11 +41,11 @@ class LikePostView(generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, pk):
-        post = Post.objects.get(id=pk)
-        like, created = Like.objects.get_or_create(post=post, user=request.user)
+        post = get_object_or_404(Post, pk=pk)  # Use get_object_or_404 to fetch the post
+        like, created = Like.objects.get_or_create(user=request.user, post=post)
 
         if created:
-            # Create a notification
+            # Create a notification for the post author
             Notification.objects.create(
                 recipient=post.author,
                 actor=request.user,
@@ -59,8 +60,9 @@ class UnlikePostView(generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, pk):
+        post = get_object_or_404(Post, pk=pk)  # Use get_object_or_404 to fetch the post
         try:
-            like = Like.objects.get(post__id=pk, user=request.user)
+            like = Like.objects.get(post=post, user=request.user)
             like.delete()
             return Response({'detail': 'Post unliked!'}, status=status.HTTP_204_NO_CONTENT)
         except Like.DoesNotExist:
