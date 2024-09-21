@@ -20,4 +20,5 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('accounts.urls')),  # Include URLs from the accounts app
+    path('', include('posts.urls')),  # Post and Comment endpoints
 ]
