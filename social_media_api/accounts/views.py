@@ -3,11 +3,11 @@ from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
 from .serializers import UserRegistrationSerializer, UserLoginSerializer
-from rest_framework import status
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ViewSet
 from django.contrib.auth import get_user_model
+from rest_framework import generics, permissions, status
 
 class UserRegisterView(APIView):
     def post(self, request):
@@ -28,24 +28,24 @@ class UserLoginView(ObtainAuthToken):
 
 User = get_user_model()
 
-class FollowViewSet(ViewSet):
-    permission_classes = [IsAuthenticated]
+class FollowUserView(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
 
-    @action(detail=True, methods=['post'])
-    def follow(self, request, pk=None):
+    def post(self, request, user_id):
         try:
-            user_to_follow = User.objects.get(pk=pk)
+            user_to_follow = User.objects.get(id=user_id)
             request.user.following.add(user_to_follow)
-            return Response({'detail': 'You are now following {}'.format(user_to_follow.username)}, status=status.HTTP_200_OK)
+            return Response({'detail': f'You are now following {user_to_follow.username}'}, status=status.HTTP_200_OK)
         except User.DoesNotExist:
             return Response({'detail': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
-    @action(detail=True, methods=['post'])
-    def unfollow(self, request, pk=None):
+class UnfollowUserView(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, user_id):
         try:
-            user_to_unfollow = User.objects.get(pk=pk)
+            user_to_unfollow = User.objects.get(id=user_id)
             request.user.following.remove(user_to_unfollow)
-            return Response({'detail': 'You have unfollowed {}'.format(user_to_unfollow.username)}, status=status.HTTP_200_OK)
+            return Response({'detail': f'You have unfollowed {user_to_unfollow.username}'}, status=status.HTTP_200_OK)
         except User.DoesNotExist:
             return Response({'detail': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
-
