@@ -26,17 +26,17 @@ class UserLoginView(ObtainAuthToken):
         token, created = Token.objects.get_or_create(user=user)
         return Response({"token": token.key})
 
-User = get_user_model()
+CustomUser = get_user_model()
 
 class FollowUserView(generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, user_id):
         try:
-            user_to_follow = User.objects.get(id=user_id)
+            user_to_follow = CustomUser.objects.get(id=user_id)
             request.user.following.add(user_to_follow)
             return Response({'detail': f'You are now following {user_to_follow.username}'}, status=status.HTTP_200_OK)
-        except User.DoesNotExist:
+        except CustomUser.DoesNotExist:
             return Response({'detail': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
 class UnfollowUserView(generics.GenericAPIView):
@@ -44,16 +44,16 @@ class UnfollowUserView(generics.GenericAPIView):
 
     def post(self, request, user_id):
         try:
-            user_to_unfollow = User.objects.get(id=user_id)
+            user_to_unfollow = CustomUser.objects.get(id=user_id)
             request.user.following.remove(user_to_unfollow)
             return Response({'detail': f'You have unfollowed {user_to_unfollow.username}'}, status=status.HTTP_200_OK)
-        except User.DoesNotExist:
+        except CustomUser.DoesNotExist:
             return Response({'detail': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
 class ListUsersView(generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
-        users = User.objects.all()
+        users = CustomUser.objects.all()  # Use CustomUser to list all users
         user_data = [{"id": user.id, "username": user.username} for user in users]
         return Response(user_data, status=status.HTTP_200_OK)
