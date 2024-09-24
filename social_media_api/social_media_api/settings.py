@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import os
 import django_heroku
 import dj_database_url
 
@@ -25,9 +26,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-ze^h+8rk!k8gn2@u17q8r0^z3x_2#j#o1hux83@f1(9h@m8u4z'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['aschusocialmedia.com']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
